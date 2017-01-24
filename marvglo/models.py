@@ -4,8 +4,15 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
+class Team(models.Model):
+    name = models.CharField(max_length=50)
+
+
 class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # level higher guy
+    boss = models.ForeignKey("self", on_delete=models.DO_NOTHING, blank=True, null=True)
+    team = models.ForeignKey(Team, on_delete=models.DO_NOTHING)
     level = models.IntegerField(default=1)
 
     def __str__(self):

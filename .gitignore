@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+# db
+db.sqlite3
+
 # pycharm stuff
 .idea
 
