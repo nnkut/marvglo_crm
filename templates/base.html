@@ -45,7 +45,15 @@
     </nav>
 
     <div class="container-fluid">
-        {% block content %}{% endblock %}
+        {% if isAuthenticated and adminApproved %}
+            {% block content %}{% endblock %}
+        {% else %}
+            {% if isAuthenticated %}
+                <p>Please contact your system administrator to approve your account.</p>
+            {% else %}
+                <p>Please log in.</p>
+            {% endif %}
+        {% endif %}
     </div>
 </body>
 </html>

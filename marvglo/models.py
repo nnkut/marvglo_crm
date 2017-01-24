@@ -14,6 +14,7 @@ class Employee(models.Model):
     boss = models.ForeignKey("self", on_delete=models.DO_NOTHING, blank=True, null=True)
     team = models.ForeignKey(Team, on_delete=models.DO_NOTHING)
     level = models.IntegerField(default=1)
+    admin_approved = models.BooleanField(default=False)
 
     def __str__(self):
         return '[' + str(self.level) + '] ' + self.user.username
