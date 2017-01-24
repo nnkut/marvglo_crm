@@ -12,9 +12,7 @@
 {% block content %}
 {#   TODO: if isAuthenticated && fully registered then display else warning #}
 
-
-
-    <div id="sesh-submit-form">
+    <div id="transaction-submit-form">
         <form action="/transaction/submit" method="post" id="sessionSubmit" class="form-inline">
             {% csrf_token %}
             <div class="form-group">
