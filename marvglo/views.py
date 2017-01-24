@@ -2,14 +2,33 @@ import registration
 from django.dispatch import receiver
 from django.shortcuts import render
 from django.views.decorators.http import require_GET, require_POST
+import Queue
 
 from marvglo.models import Employee
 
 
 @require_GET
 def index(request):
+
+    # Collect transactions for lower levels
+    employee = request.user.employee
+    transactions = []
+    transactions.extend(list(employee.transaction_set.all()))
+    subEmployeeQueue = Queue.PriorityQueue()
+    for sub_emp in list(employee.employee_set.all()):
+        subEmployeeQueue.put(sub_emp)
+    #subEmployeeQueue.put(list(employee.employee_set.all()))
+    while not subEmployeeQueue.empty():
+        sub_employee = subEmployeeQueue.get()
+        transactions.extend(list(sub_employee.transaction_set.all()))
+        #subEmployeeQueue.put(list(sub_employee.employee_set.all()))
+        for sub_emp in list(sub_employee.employee_set.all()):
+            subEmployeeQueue.put(sub_emp)
+
     ctx = {
         'isAuthenticated': request.user.is_authenticated,
+        'adminApproved': employee.admin_approved,
+        'transactions': transactions
     }
     return render(request, 'marvglo/home.html', ctx)
 

@@ -10,7 +10,8 @@
 {% endblock %}
 
 {% block content %}
-{#   TODO: if isAuthenticated && fully registered then display else warning #}
+
+{% if isAuthenticated and adminApproved %}
 
     <div id="transaction-submit-form">
         <form action="/transaction/submit" method="post" id="sessionSubmit" class="form-inline">
@@ -127,5 +128,12 @@
         </tbody>
     </table>
     </div>
+   {% else %}
+    {% if isAuthenticated %}
+        <p>Please contact your system administrator to approve your account.</p>
+    {% else %}
+        <p>Please log in.</p>
+    {% endif %}
+{% endif %}
 {% endblock %}
 
