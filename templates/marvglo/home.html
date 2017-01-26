@@ -69,8 +69,12 @@
                 <td>{{ transaction.owner }}</td>
                 <td>TODO: commission</td>
                 <td>
-                    <a href="/transaction/{{ transaction.id }}"><span class="glyphicon glyphicon-cog"></span></a>
-                    <a href="/transaction/remove/{{ transaction.id }}"><span class="glyphicon glyphicon-remove"></span></a>
+                    {% if transaction.owner == employee %}
+                        <a href="/transaction/{{ transaction.id }}"><span class="glyphicon glyphicon-cog"></span></a>
+                        <a href="/transaction/remove/{{ transaction.id }}"><span class="glyphicon glyphicon-remove"></span></a>
+                    {% else %}
+                        -
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}

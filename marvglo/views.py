@@ -25,6 +25,7 @@ def index(request):
             subEmployeeQueue.put(sub_emp)
 
     ctx = {
+        'employee': request.user.employee,
         'isAuthenticated': request.user.is_authenticated,
         'adminApproved': employee.admin_approved,
         'transactions': transactions,
