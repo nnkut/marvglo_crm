@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.views.decorators.http import require_GET, require_POST
 import Queue
 
-from marvglo.models import Employee
+from marvglo.models import Employee, SaleItem
 
 
 @require_GET
@@ -28,7 +28,8 @@ def index(request):
     ctx = {
         'isAuthenticated': request.user.is_authenticated,
         'adminApproved': employee.admin_approved,
-        'transactions': transactions
+        'transactions': transactions,
+        'items': list(SaleItem.objects.all())
     }
     return render(request, 'marvglo/home.html', ctx)
 
