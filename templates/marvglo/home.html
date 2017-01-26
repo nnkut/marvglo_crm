@@ -4,8 +4,8 @@
 {% block title %} Marvglo - home {% endblock %}
 {% block scripts %}
     {#  local static  #}
-    <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+{#    <script type="text/javascript" src="{% static 'js/main.js' %}"></script>#}
+{#    <link rel="stylesheet" href="{% static 'css/main.css' %}">#}
 
 {% endblock %}
 
@@ -36,54 +36,41 @@
     </div>
 
     <div class="transactions">
-    <table class="table table-hover tablesorter" id="sessionStats">
+    <table class="table table-bordered" id="transactionStats">
         <thead>
             <tr>
                 <th class="header">
-                    Stakes
-                    <span class="glyphicon glyphicon-resize-vertical"></span>
+                    Item ID
                 </th>
                 <th class="header">
-                    Game
+                    Item Name
                 </th>
                 <th class="header">
-                    Place
+                    # of items sold
                 </th>
                 <th class="header">
-                    Profit
-                    <span class="glyphicon glyphicon-resize-vertical"></span>
+                    Sold by (self or distributed)
                 </th>
                 <th class="header">
-                    Length
-                    <span class="glyphicon glyphicon-resize-vertical"></span>
-                </th>
-                <th class="header">
-                    £/h
-                    <span class="glyphicon glyphicon-resize-vertical"></span>
-                </th>
-                <th class="header">
-                    Date played
-                    <span class="glyphicon glyphicon-resize-vertical"></span>
+                    Commission
                 </th>
                 <th>
                     Options
                 </th>
             </tr>
         </thead>
-        <tbody id="session-form-data">
+        <tbody id="transactions-form-data">
 
-        {% for session in sessions %}
-            <tr class="{% if session.profit >= 0 %} success {% else %} danger {% endif %}">
-                <td>{{ session.stake_level }}</td>
-                <td>{{ session.game_type }}</td>
-                <td>{{ session.casino_name }}</td>
-                <td>{{ session.profit }}</td>
-                <td>{{ session.session_length }}</td>
-                <td>{% widthratio session.profit session.session_length 1 %}</td>
-                <td>{{ session.date_played }}</td>
+        {% for transaction in transactions %}
+            <tr>
+                <td>{{ transaction.item.id }}</td>
+                <td>{{ transaction.item.name }}</td>
+                <td>{{ transaction.quantity }}</td>
+                <td>{{ transaction.owner }}</td>
+                <td>TODO: commission</td>
                 <td>
-                    <a href="/transaction/{{ session.id }}"><span class="glyphicon glyphicon-cog"></span></a>
-                    <a href="/transaction/remove/{{ session.id }}"><span class="glyphicon glyphicon-remove"></span></a>
+                    <a href="/transaction/{{ transaction.id }}"><span class="glyphicon glyphicon-cog"></span></a>
+                    <a href="/transaction/remove/{{ transaction.id }}"><span class="glyphicon glyphicon-remove"></span></a>
                 </td>
             </tr>
         {% endfor %}
@@ -91,7 +78,7 @@
         </tbody>
     </table>
     </div>
-   {% else %}
+{% else %}
     {% if isAuthenticated %}
         <p>Please contact your system administrator to approve your account.</p>
     {% else %}
