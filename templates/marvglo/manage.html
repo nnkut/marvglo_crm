@@ -1,0 +1,36 @@
+{% extends '../base.html' %}
+{% load static %}
+
+{% block title %} Marvglo - Manage Employees {% endblock %}
+{% block scripts %}
+
+{% endblock %}
+
+{% block content %}
+    <h4>Here you can assign new employees to a manager </h4>
+    {% if any_unassigned %}
+        <form class="form-inline" action="/manage/" method="post">
+        {% csrf_token %}
+            Assign
+            <label>
+                <select class="form-control" name="employee">
+                    {% for employee in unassigned_employees %}
+                        <option>{{ employee }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            To
+            <label>
+                <select class="form-control" name="manager">
+                    {% for manager in managers %}
+                        <option>{{ manager }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <button type="submit" class="btn btn-default">Assign</button>
+        </form>
+    {% else %}
+        <p>All employees have been assigned and approved</p>
+    {% endif %}
+{% endblock %}
+

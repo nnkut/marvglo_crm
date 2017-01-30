@@ -1,4 +1,6 @@
 import registration
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_GET, require_POST
@@ -10,6 +12,12 @@ from marvglo_crm.settings import MAX_EMPLOYEE_LEVEL, PERSONAL_BONUS_COMMISSION, 
 
 @require_GET
 def index(request):
+    if not request.user.is_authenticated:
+        ctx = {
+            'isAuthenticated': request.user.is_authenticated,
+        }
+        return render(request, 'marvglo/home.html', ctx)
+
     # Collect transactions for lower levels
     employee = request.user.employee
     transactions = []
@@ -17,11 +25,9 @@ def index(request):
     subEmployeeQueue = Queue.PriorityQueue()
     for sub_emp in list(employee.employee_set.all()):
         subEmployeeQueue.put(sub_emp)
-    # subEmployeeQueue.put(list(employee.employee_set.all()))
     while not subEmployeeQueue.empty():
         sub_employee = subEmployeeQueue.get()
         transactions.extend(list(sub_employee.transaction_set.all()))
-        # subEmployeeQueue.put(list(sub_employee.employee_set.all()))
         for sub_emp in list(sub_employee.employee_set.all()):
             subEmployeeQueue.put(sub_emp)
 
@@ -56,6 +62,7 @@ def register_new_player(sender, **kwargs):
     employee.save()
 
 
+@login_required(login_url='reg/login/')
 @require_GET
 def remove_transaction(request, transaction_id):
     try:
@@ -69,9 +76,11 @@ def remove_transaction(request, transaction_id):
     return redirect(index)
 
 
+@login_required(login_url='reg/login/')
 @require_GET
 def view_transaction(request, transaction_id):
     ctx = {
+        'employee': request.user.employee,
         'isAuthenticated': request.user.is_authenticated,
         'adminApproved': request.user.employee.admin_approved,
         'items': list(SaleItem.objects.all())
@@ -111,3 +120,29 @@ def amend_transaction(request, transaction_id):
         # did not even exist
         pass
     return redirect(index)
+
+
+@login_required(login_url='reg/login/')
+def manage(request):
+    if request.method == 'GET':
+        employees = Employee.objects.filter(admin_approved=False)
+        ctx = {
+            'employee': request.user.employee,
+            'isAuthenticated': request.user.is_authenticated,
+            'any_unassigned': len(list(employees)) != 0,
+            'unassigned_employees': list(employees),
+            'managers': list(Employee.objects.filter(level__lte=2))  # those who can manage lowest level employees
+        }
+        return render(request, 'marvglo/manage.html', ctx)
+    else:
+        try:
+            employee = Employee.objects.get(user=User.objects.get(username=request.POST['employee']))
+            manager = Employee.objects.get(user=User.objects.get(username=request.POST['manager']))
+            employee.boss = manager
+            employee.admin_approved = True
+            employee.save()
+        except:
+            #shit
+            pass
+        return redirect(manage)
+

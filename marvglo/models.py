@@ -12,7 +12,7 @@ class Employee(models.Model):
     admin_approved = models.BooleanField(default=False)
 
     def __str__(self):
-        return '[' + str(self.level) + '] ' + self.user.username
+        return self.user.username
 
 
 class SaleItem(models.Model):

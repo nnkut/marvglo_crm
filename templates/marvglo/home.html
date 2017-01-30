@@ -84,8 +84,8 @@
                 </td>
                 <td>
                     {% if transaction.owner == employee %}
-                        <a href="/transaction/{{ transaction.id }}"><span class="glyphicon glyphicon-cog"></span></a>
-                        <a href="/transaction/remove/{{ transaction.id }}"><span class="glyphicon glyphicon-remove"></span></a>
+                        <a href="/transaction/{{ transaction.id }}"><span class="glyphicon glyphicon-cog">Amend</span></a>
+                        <a href="/transaction/remove/{{ transaction.id }}"><span class="glyphicon glyphicon-remove">Remove</span></a>
                     {% else %}
                         -
                     {% endif %}
