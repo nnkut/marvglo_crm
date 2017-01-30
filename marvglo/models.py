@@ -8,7 +8,7 @@ class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # level higher guy
     boss = models.ForeignKey("self", on_delete=models.DO_NOTHING, blank=True, null=True)
-    level = models.IntegerField(default=1)
+    level = models.IntegerField(default=3)
     admin_approved = models.BooleanField(default=False)
 
     def __str__(self):
@@ -24,11 +24,21 @@ class SaleItem(models.Model):
 
 
 class Transaction(models.Model):
-    # TODO: fill this model fully
     item = models.ForeignKey(SaleItem, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
+    sold_at_price = models.FloatField(default=0)
     # sold by
     owner = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    # TODO: figure if this is needed at all
+    date = models.DateField(blank=True, null=True)
+
+    # commissions (not stored in db, just a list computed when transactions are gathered)
+    personal_bonus = []
+    volume_bonus = []
 
     def __str__(self):
         return '[' + str(self.item.id) + '] : ' + str(self.item) + ' : ' + str(self.quantity) + 'pcs'
+
+    def save(self, *args, **kwargs):
+
+        super(Transaction, self).save(*args, **kwargs)

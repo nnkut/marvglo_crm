@@ -5,6 +5,7 @@ from django.views.decorators.http import require_GET, require_POST
 import Queue
 
 from marvglo.models import Employee, SaleItem, Transaction
+from marvglo_crm.settings import MAX_EMPLOYEE_LEVEL, PERSONAL_BONUS_COMMISSION, VOLUME_BONUS_COMMISSION
 
 
 @require_GET
@@ -23,6 +24,17 @@ def index(request):
         # subEmployeeQueue.put(list(sub_employee.employee_set.all()))
         for sub_emp in list(sub_employee.employee_set.all()):
             subEmployeeQueue.put(sub_emp)
+
+    personal_bonuses = []
+    volume_bonuses = []
+    for transaction_id in range(len(transactions)):
+        for level in range(MAX_EMPLOYEE_LEVEL):
+            personal_bonuses.append(PERSONAL_BONUS_COMMISSION[level] * transactions[transaction_id].quantity * transactions[transaction_id].item.price)
+            volume_bonuses.append(transactions[transaction_id].quantity * transactions[transaction_id].item.price * VOLUME_BONUS_COMMISSION[level][transactions[transaction_id].owner.level])
+        transactions[transaction_id].personal_bonus = personal_bonuses
+        transactions[transaction_id].volume_bonus = volume_bonuses
+        personal_bonuses = []
+        volume_bonuses = []
 
     ctx = {
         'employee': request.user.employee,
@@ -76,7 +88,8 @@ def view_transaction(request, transaction_id):
 def submit_transaction(request):
     t = Transaction(item=SaleItem.objects.get(name=request.POST['itemName']),
                     quantity=request.POST['quantity'],
-                    owner=request.user.employee)
+                    owner=request.user.employee,
+                    sold_at_price=SaleItem.objects.get(name=request.POST['itemName']).price)
     t.save()
     return redirect(index)
 

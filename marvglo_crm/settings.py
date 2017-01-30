@@ -122,3 +122,12 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 LOGIN_REDIRECT_URL = '/'
+
+MAX_EMPLOYEE_LEVEL = 4  # base 0
+# commissions based on rank, director = 18% etc
+PERSONAL_BONUS_COMMISSION = [0.18, 0.13, 0.08, 0.05]
+# volume commissions
+VOLUME_BONUS_COMMISSION = [[0, 0.05, 0.1, 0.13],
+                           [0, 0, 0.05, 0.08],
+                           [0, 0, 0, 0.03],
+                           [0, 0, 0, 0]]

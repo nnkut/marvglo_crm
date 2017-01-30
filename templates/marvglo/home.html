@@ -49,6 +49,9 @@
                     Item Name
                 </th>
                 <th class="header">
+                    Sold at price
+                </th>
+                <th class="header">
                     # of items sold
                 </th>
                 <th class="header">
@@ -68,9 +71,17 @@
             <tr>
                 <td>{{ transaction.item.id }}</td>
                 <td>{{ transaction.item.name }}</td>
+                <td>{{ transaction.sold_at_price }}</td>
                 <td>{{ transaction.quantity }}</td>
                 <td>{{ transaction.owner }}</td>
-                <td>TODO: commission</td>
+                <td>
+                    {% if transaction.owner == employee %}
+                        {{ transaction.personal_bonus.0 }}
+                        {{ employee.level }}
+                    {% else %}
+                        999999
+                    {% endif %}
+                </td>
                 <td>
                     {% if transaction.owner == employee %}
                         <a href="/transaction/{{ transaction.id }}"><span class="glyphicon glyphicon-cog"></span></a>
