@@ -1,5 +1,6 @@
 {% extends '../base.html' %}
 {% load static %}
+{% load filters %}
 
 {% block title %} Marvglo - home {% endblock %}
 {% block scripts %}
@@ -76,10 +77,9 @@
                 <td>{{ transaction.owner }}</td>
                 <td>
                     {% if transaction.owner == employee %}
-                        {{ transaction.personal_bonus.0 }}
-                        {{ employee.level }}
+                        {{ transaction.personal_bonus|at:employee.level }}
                     {% else %}
-                        999999
+                        {{ transaction.volume_bonus|at:employee.level }}
                     {% endif %}
                 </td>
                 <td>

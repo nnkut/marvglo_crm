@@ -25,12 +25,16 @@ def index(request):
         for sub_emp in list(sub_employee.employee_set.all()):
             subEmployeeQueue.put(sub_emp)
 
+    # calculate commissions
     personal_bonuses = []
     volume_bonuses = []
     for transaction_id in range(len(transactions)):
         for level in range(MAX_EMPLOYEE_LEVEL):
-            personal_bonuses.append(PERSONAL_BONUS_COMMISSION[level] * transactions[transaction_id].quantity * transactions[transaction_id].item.price)
-            volume_bonuses.append(transactions[transaction_id].quantity * transactions[transaction_id].item.price * VOLUME_BONUS_COMMISSION[level][transactions[transaction_id].owner.level])
+            personal_bonuses.append(
+                PERSONAL_BONUS_COMMISSION[level] * transactions[transaction_id].quantity * transactions[
+                    transaction_id].sold_at_price)
+            volume_bonuses.append(transactions[transaction_id].quantity * transactions[transaction_id].sold_at_price *
+                                  VOLUME_BONUS_COMMISSION[level][transactions[transaction_id].owner.level])
         transactions[transaction_id].personal_bonus = personal_bonuses
         transactions[transaction_id].volume_bonus = volume_bonuses
         personal_bonuses = []
