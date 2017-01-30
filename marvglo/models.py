@@ -38,7 +38,3 @@ class Transaction(models.Model):
 
     def __str__(self):
         return '[' + str(self.item.id) + '] : ' + str(self.item) + ' : ' + str(self.quantity) + 'pcs'
-
-    def save(self, *args, **kwargs):
-
-        super(Transaction, self).save(*args, **kwargs)
