@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.shortcuts import render, redirect
+from django.utils.datastructures import MultiValueDictKeyError
 from django.views.decorators.http import require_GET, require_POST
 import Queue
 
@@ -19,7 +20,24 @@ def index(request):
         return render(request, 'marvglo/home.html', ctx)
 
     # Collect transactions for lower levels
-    employee = request.user.employee
+    if request.user.is_superuser:
+        try:
+            employee_id = request.GET['employee']
+            try:
+                employee = Employee.objects.filter(user=User.objects.get(username=employee_id)).get()
+            except User.DoesNotExist or Employee.DoesNotExist:
+                # TODO: error page
+                pass
+        except MultiValueDictKeyError:
+            ctx = {
+                'isAuthenticated': request.user.is_authenticated,
+                'isAdmin': request.user.is_superuser and request.user.is_staff,
+                'teamLeaders': list(Employee.objects.filter(level=0)),
+            }
+            return render(request, 'marvglo/home.html', ctx)
+    else:
+        employee = request.user.employee
+
     transactions = []
     transactions.extend(list(employee.transaction_set.all()))
     subEmployeeQueue = Queue.PriorityQueue()
@@ -47,10 +65,12 @@ def index(request):
         volume_bonuses = []
 
     ctx = {
-        'employee': request.user.employee,
+        'employee': employee,
         'isAuthenticated': request.user.is_authenticated,
         'adminApproved': employee.admin_approved,
+        'isAdmin': request.user.is_superuser and request.user.is_staff,
         'transactions': transactions,
+        'teamLeaders': list(Employee.objects.filter(level=0)),
         'items': list(SaleItem.objects.all())
     }
     return render(request, 'marvglo/home.html', ctx)
