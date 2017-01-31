@@ -13,6 +13,7 @@ from marvglo_crm.settings import MAX_EMPLOYEE_LEVEL, PERSONAL_BONUS_COMMISSION, 
 
 @require_GET
 def index(request):
+    global employee
     if not request.user.is_authenticated:
         ctx = {
             'isAuthenticated': request.user.is_authenticated,
@@ -55,10 +56,14 @@ def index(request):
     for transaction_id in range(len(transactions)):
         for level in range(MAX_EMPLOYEE_LEVEL):
             personal_bonuses.append(
-                PERSONAL_BONUS_COMMISSION[level] * transactions[transaction_id].quantity * transactions[
-                    transaction_id].sold_at_price)
-            volume_bonuses.append(transactions[transaction_id].quantity * transactions[transaction_id].sold_at_price *
-                                  VOLUME_BONUS_COMMISSION[level][transactions[transaction_id].owner.level])
+                round(
+                    PERSONAL_BONUS_COMMISSION[level] * transactions[transaction_id].quantity * transactions[
+                        transaction_id].sold_at_price, 2))
+            volume_bonuses.append(
+                round(
+                    transactions[transaction_id].quantity * transactions[transaction_id].sold_at_price *
+                    VOLUME_BONUS_COMMISSION[level][transactions[transaction_id].owner.level], 2))
+
         transactions[transaction_id].personal_bonus = personal_bonuses
         transactions[transaction_id].volume_bonus = volume_bonuses
         personal_bonuses = []
@@ -162,7 +167,6 @@ def manage(request):
             employee.admin_approved = True
             employee.save()
         except:
-            #shit
+            # shit
             pass
         return redirect(manage)
-
