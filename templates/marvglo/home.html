@@ -19,6 +19,10 @@
 
     {#   if admin - display selection for for which team to choose  #}
     {% if isAdmin %}
+        {% ifequal employee None %}
+        {% else %}
+            <p>Viewing {{ employee.user.username }}'s team</p>
+        {% endifequal %}
         <form class="form-inline" action="/" method="get">
         {% csrf_token %}
             Team boss:
@@ -30,7 +34,7 @@
                 </select>
             </label>
 
-            <button type="submit" class="btn btn-default">Switch</button>
+            <button type="submit" class="btn btn-default">Switch team</button>
         </form>
     {% endif %}
 
