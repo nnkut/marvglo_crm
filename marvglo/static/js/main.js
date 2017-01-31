@@ -32,7 +32,7 @@ function updateTotalsFromTable() {
 
     // shove results onto the page
     $('#total-num-sales').html(totalNumSales);
-    $('#total-commission').html(totalCommission);
-    $('#total-sales').html(totalSales);
+    $('#total-commission').html(totalCommission.toFixed(2));
+    $('#total-sales').html(totalSales.toFixed(2));
 
 }
