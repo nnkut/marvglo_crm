@@ -27,8 +27,7 @@ def index(request):
             try:
                 employee = Employee.objects.filter(user=User.objects.get(username=employee_id)).get()
             except User.DoesNotExist or Employee.DoesNotExist:
-                # TODO: error page
-                pass
+                return render(request, 'marvglo/error.html', {'isAuthenticated': request.user.is_authenticated})
         except MultiValueDictKeyError:
             ctx = {
                 'isAuthenticated': request.user.is_authenticated,
@@ -97,6 +96,7 @@ def remove_transaction(request, transaction_id):
             t.delete()
     except Transaction.DoesNotExist:
         # did not even exist
+
         pass
     return redirect(index)
 
@@ -118,7 +118,7 @@ def view_transaction(request, transaction_id):
         ctx['transaction'] = t
     except Transaction.DoesNotExist:
         # did not even exist
-        return redirect(index)
+        return render(request, 'marvglo/error.html', {'isAuthenticated': request.user.is_authenticated})
     return render(request, 'marvglo/transaction.html', ctx)
 
 
@@ -143,7 +143,7 @@ def amend_transaction(request, transaction_id):
             t.save()
     except Transaction.DoesNotExist:
         # did not even exist
-        pass
+        return render(request, 'marvglo/error.html', {'isAuthenticated': request.user.is_authenticated})
     return redirect(index)
 
 
@@ -167,6 +167,5 @@ def manage(request):
             employee.admin_approved = True
             employee.save()
         except:
-            # shit
-            pass
+            return render(request, 'marvglo/error.html', {'isAuthenticated': request.user.is_authenticated})
         return redirect(manage)
