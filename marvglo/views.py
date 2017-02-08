@@ -8,7 +8,7 @@ from django.views.decorators.http import require_GET, require_POST
 import Queue
 
 from marvglo.models import Employee, SaleItem, Transaction
-from marvglo_crm.settings import MAX_EMPLOYEE_LEVEL, PERSONAL_BONUS_COMMISSION, VOLUME_BONUS_COMMISSION
+from marvglo_crm.settings import MAX_EMPLOYEE_LEVEL, PERSONAL_BONUS_COMMISSION, VOLUME_BONUS_COMMISSION, RANK_TITLE_MAPPING
 
 
 @require_GET
@@ -33,6 +33,7 @@ def index(request):
                 'isAuthenticated': request.user.is_authenticated,
                 'isAdmin': request.user.is_superuser and request.user.is_staff,
                 'teamLeaders': list(Employee.objects.filter(level=0)),
+                'title': 'admin'
             }
             return render(request, 'marvglo/home.html', ctx)
     else:
@@ -73,6 +74,7 @@ def index(request):
         'isAuthenticated': request.user.is_authenticated,
         'adminApproved': employee.admin_approved,
         'isAdmin': request.user.is_superuser and request.user.is_staff,
+        'title': RANK_TITLE_MAPPING[employee.level],
         'transactions': transactions,
         'teamLeaders': list(Employee.objects.filter(level=0)),
         'items': list(SaleItem.objects.all())
