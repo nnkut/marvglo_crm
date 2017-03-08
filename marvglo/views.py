@@ -127,13 +127,22 @@ def view_transaction(request, transaction_id):
 
 @require_POST
 def submit_transaction(request):
+    # TODO: Dict no entry error here. (although doesnt really matter as its a post)
     employee_id = Employee.objects.get(user=User.objects.get(username=request.POST['employee']))
-    t = Transaction(item=SaleItem.objects.get(name=request.POST['itemName']),
-                    quantity=request.POST['quantity'],
-                    submitted_by=request.user.employee,
-                    owner=employee_id,
-                    sold_at_price=SaleItem.objects.get(name=request.POST['itemName']).price)
-    t.save()
+    quantity = request.POST['quantity']
+    item = SaleItem.objects.get(name=request.POST['itemName'])
+    # check there is enough product in stock
+    if quantity <= item.stock:
+        t = Transaction(item=item,
+                        quantity=quantity,
+                        submitted_by=request.user.employee,
+                        owner=employee_id,
+                        sold_at_price=SaleItem.objects.get(name=request.POST['itemName']).price)
+        t.save()
+        item.stock -= quantity
+    else:
+        # TODO; redirect with error message
+        pass
     return redirect(index)
 
 
@@ -143,9 +152,13 @@ def amend_transaction(request, transaction_id):
         t = Transaction.objects.get(id=transaction_id)
         # check if user is cashier (have rights to view and change transactions)
         if request.user.employee.is_cashier:
-            t.item = SaleItem.objects.get(name=request.POST['itemName'])
-            t.quantity = request.POST['quantity']
-            t.save()
+            item = SaleItem.objects.get(name=request.POST['itemName'])
+            quantity = request.POST['quantity']
+            # check that there is enough product in stock
+            if quantity <= (t.quantity + item.stock):
+                t.item = item
+                t.quantity = quantity
+                t.save()
     except Transaction.DoesNotExist:
         # did not even exist
         return render(request, 'marvglo/error.html', {'isAuthenticated': request.user.is_authenticated})
