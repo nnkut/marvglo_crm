@@ -1,0 +1,24 @@
+{% extends '../base.html' %}
+{% load static %}
+
+{% block title %} Marvglo - Register New Employees {% endblock %}
+{% block scripts %}
+
+{% endblock %}
+
+{% block content %}
+    <h4>Register new employees</h4>
+    <form class="form" action="/create_user/" method="post">
+    {% csrf_token %}
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input class="form-control" type="email" id="email" name="email" required placeholder="user@domain"/>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input class="form-control" type="text" id="password" name="password" required placeholder="passwd"/>
+        </div>
+        <button type="submit" class="btn btn-default">Register</button>
+    </form>
+{% endblock %}
+

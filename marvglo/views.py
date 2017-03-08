@@ -174,6 +174,7 @@ def manage(request):
             'isAuthenticated': request.user.is_authenticated,
             'any_unassigned': len(list(employees)) != 0,
             'unassigned_employees': list(employees),
+            'title': RANK_TITLE_MAPPING[request.user.employee.level],
             'managers': list(Employee.objects.filter(level__lte=2))  # those who can manage lowest level employees
         }
         return render(request, 'marvglo/manage.html', ctx)
@@ -187,3 +188,22 @@ def manage(request):
         except:
             return render(request, 'marvglo/error.html', {'isAuthenticated': request.user.is_authenticated})
         return redirect(manage)
+
+
+@login_required(login_url='reg/login/')
+def create_user(request):
+    if request.user.employee.is_cashier:
+        if request.method == 'GET':
+            ctx = {
+                'isAuthenticated': request.user.is_authenticated,
+                'title': RANK_TITLE_MAPPING[request.user.employee.level],
+            }
+            return render(request, 'marvglo/create_user.html', ctx)
+        else:
+            # create new django user
+            user = User.objects.create_user(request.POST['email'], request.POST['email'], request.POST['password'])
+            # create employee instance using django user
+            Employee(user=user).save()
+            return redirect(manage)
+    else:
+        return render(request, 'marvglo/error.html', {'isAuthenticated': request.user.is_authenticated})
