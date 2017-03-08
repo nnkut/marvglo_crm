@@ -39,26 +39,36 @@
     {% endif %}
 
     {% if not isAdmin %}
-    <div id="transaction-submit-form">
-        <form action="/transaction/submit" method="post" id="submit_transaction" class="form-inline">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="itemName">Item</label>
-                <select class="form-control" name="itemName" id="itemName">
-                    {% for item in items %}
-                        <option>{{ item.name }} </option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="quantity">Quantity</label>
-                <input class="form-control" type="number" step="1" id="quantity" name="quantity" required placeholder="# items sold"/>
-            </div>
+        {% if isCashier %}
+        <div id="transaction-submit-form">
+            <form action="/transaction/submit" method="post" id="submit_transaction" class="form-inline">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="employeeId">Sold by:</label>
+                    <select class="form-control" name="employeeId" id="employeeId">
+                        {% for employee in list_of_employees %}
+                            <option>{{ employee }} </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="itemName">Item</label>
+                    <select class="form-control" name="itemName" id="itemName">
+                        {% for item in items %}
+                            <option>{{ item.name }} </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="quantity">Quantity</label>
+                    <input class="form-control" type="number" step="1" id="quantity" name="quantity" required placeholder="# items sold"/>
+                </div>
 
-            <button type="submit" class="btn btn-default">Add</button>
+                <button type="submit" class="btn btn-default">Add</button>
 
-        </form>
-    </div>
+            </form>
+        </div>
+        {% endif %}
     {% endif %}
 
     <div id="total-results">
@@ -119,7 +129,7 @@
                     {% endif %}
                 </td>
                 <td>
-                    {% if transaction.owner == employee %}
+                    {% if isCashier %}
                         <a href="/transaction/{{ transaction.id }}"><span class="glyphicon glyphicon-cog">Amend</span></a>
                         <a href="/transaction/remove/{{ transaction.id }}"><span class="glyphicon glyphicon-remove">Remove</span></a>
                     {% else %}

@@ -13,6 +13,8 @@ class Employee(models.Model):
     title = models.CharField(choices=map(lambda t: (t,t), RANK_TITLE_MAPPING), max_length=50, default='Supervisor')
     level = models.IntegerField(default=3)
     admin_approved = models.BooleanField(default=False)
+    # determines whether user is able to input sales
+    is_cashier = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username
@@ -29,6 +31,8 @@ class Employee(models.Model):
 class SaleItem(models.Model):
     name = models.CharField(max_length=200)
     price = models.FloatField(default=0.0)
+    # number of items available
+    stock = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -40,6 +44,9 @@ class Transaction(models.Model):
     sold_at_price = models.FloatField(default=0)
     # sold by
     owner = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    # cashier this was submitted by
+    submitted_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+
     # TODO: figure if this is needed at all
     date = models.DateField(blank=True, null=True)
 

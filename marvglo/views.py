@@ -73,6 +73,8 @@ def index(request):
         'employee': employee,
         'isAuthenticated': request.user.is_authenticated,
         'adminApproved': employee.admin_approved,
+        'isCashier': employee.is_cashier,
+        'list_of_employees': list(Employee.objects.all()),
         'isAdmin': request.user.is_superuser and request.user.is_staff,
         'title': RANK_TITLE_MAPPING[employee.level],
         'transactions': transactions,
@@ -93,12 +95,11 @@ def register_new_player(sender, **kwargs):
 def remove_transaction(request, transaction_id):
     try:
         t = Transaction.objects.get(id=transaction_id)
-        # check transaction ownership
-        if t.owner == request.user.employee:
+        # check if user is cashier (have rights to view and change transactions)
+        if request.user.employee.is_cashier:
             t.delete()
     except Transaction.DoesNotExist:
         # did not even exist
-
         pass
     return redirect(index)
 
@@ -114,8 +115,8 @@ def view_transaction(request, transaction_id):
     }
     try:
         t = Transaction.objects.get(id=transaction_id)
-        # check transaction ownership
-        if t.owner != request.user.employee:
+        # check if user is cashier (have rights to view and change transactions)
+        if not request.user.employee.is_cashier:
             return redirect(index)
         ctx['transaction'] = t
     except Transaction.DoesNotExist:
@@ -126,9 +127,11 @@ def view_transaction(request, transaction_id):
 
 @require_POST
 def submit_transaction(request):
+    employee_id = Employee.objects.get(user=User.objects.get(username=request.POST['employee']))
     t = Transaction(item=SaleItem.objects.get(name=request.POST['itemName']),
                     quantity=request.POST['quantity'],
-                    owner=request.user.employee,
+                    submitted_by=request.user.employee,
+                    owner=employee_id,
                     sold_at_price=SaleItem.objects.get(name=request.POST['itemName']).price)
     t.save()
     return redirect(index)
@@ -138,8 +141,8 @@ def submit_transaction(request):
 def amend_transaction(request, transaction_id):
     try:
         t = Transaction.objects.get(id=transaction_id)
-        # check transaction ownership
-        if t.owner == request.user.employee:
+        # check if user is cashier (have rights to view and change transactions)
+        if request.user.employee.is_cashier:
             t.item = SaleItem.objects.get(name=request.POST['itemName'])
             t.quantity = request.POST['quantity']
             t.save()
