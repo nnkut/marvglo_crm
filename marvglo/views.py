@@ -54,7 +54,7 @@ def index(request):
             subEmployeeQueue.put(sub_emp)
 
     # filter out transactions - only those that submitted this calendar month
-    filter(_check_if_date_is_current_month, transactions)
+    transactions = [t for t in transactions if _check_if_date_is_current_month(t)]
 
     # calculate commissions
     personal_bonuses = []
