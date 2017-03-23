@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 
 from django.db import models
+from django.utils import timezone
 
 from marvglo_crm.settings import RANK_TITLE_MAPPING
 
@@ -48,7 +49,7 @@ class Transaction(models.Model):
     submitted_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
     # TODO: figure if this is needed at all
-    date = models.DateTimeField(blank=True, null=True)
+    date = models.DateTimeField(blank=True, null=True, default=timezone.now)
 
     # commissions (not stored in db, just a list computed when transactions are gathered)
     personal_bonus = []
