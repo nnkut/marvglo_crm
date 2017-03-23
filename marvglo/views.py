@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect
 from django.utils.datastructures import MultiValueDictKeyError
 from django.views.decorators.http import require_GET, require_POST
 import Queue
+import datetime
 
 from marvglo.models import Employee, SaleItem, Transaction
 from marvglo_crm.settings import MAX_EMPLOYEE_LEVEL, PERSONAL_BONUS_COMMISSION, VOLUME_BONUS_COMMISSION, RANK_TITLE_MAPPING
@@ -41,6 +42,8 @@ def index(request):
 
     transactions = []
     transactions.extend(list(employee.transaction_set.all()))
+
+    # BFS looking for all transactions
     subEmployeeQueue = Queue.PriorityQueue()
     for sub_emp in list(employee.employee_set.all()):
         subEmployeeQueue.put(sub_emp)
@@ -49,6 +52,9 @@ def index(request):
         transactions.extend(list(sub_employee.transaction_set.all()))
         for sub_emp in list(sub_employee.employee_set.all()):
             subEmployeeQueue.put(sub_emp)
+
+    # filter out transactions - only those that submitted this calendar month
+    filter(_check_if_date_is_current_month, transactions)
 
     # calculate commissions
     personal_bonuses = []
@@ -206,3 +212,10 @@ def create_user(request):
             return redirect(manage)
     else:
         return render(request, 'marvglo/error.html', {'isAuthenticated': request.user.is_authenticated})
+
+
+def _check_if_date_is_current_month(transaction):
+    date = transaction.date_time_created
+    if not date:
+        return False
+    return datetime.datetime.now().year == date.year and datetime.datetime.now().month == date.month

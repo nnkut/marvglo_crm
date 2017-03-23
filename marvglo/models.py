@@ -11,7 +11,7 @@ class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # level higher guy
     boss = models.ForeignKey("self", on_delete=models.DO_NOTHING, blank=True, null=True)
-    title = models.CharField(choices=map(lambda t: (t,t), RANK_TITLE_MAPPING), max_length=50, default='Supervisor')
+    title = models.CharField(choices=map(lambda t: (t, t), RANK_TITLE_MAPPING), max_length=50, default='Supervisor')
     level = models.IntegerField(default=3)
     admin_approved = models.BooleanField(default=False)
     # determines whether user is able to input sales
@@ -43,13 +43,12 @@ class Transaction(models.Model):
     item = models.ForeignKey(SaleItem, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=0)
     sold_at_price = models.FloatField(default=0)
-    # sold by
+    # sold by employee
     owner = models.ForeignKey(Employee, on_delete=models.CASCADE)
     # cashier this was submitted by
     submitted_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
-    # TODO: figure if this is needed at all
-    date = models.DateTimeField(blank=True, null=True, default=timezone.now)
+    date_time_created = models.DateTimeField(blank=True, null=True, default=timezone.now)
 
     # commissions (not stored in db, just a list computed when transactions are gathered)
     personal_bonus = []
