@@ -127,8 +127,6 @@ def view_transaction(request, transaction_id):
 
 @require_POST
 def submit_transaction(request):
-    # TODO: Dict no entry error here. (although doesnt really matter as its a post)
-
     employee_id = Employee.objects.get(user=User.objects.get(username=request.POST['employeeId']))
     quantity = int(request.POST['quantity'])
     item = SaleItem.objects.get(name=request.POST['itemName'])
@@ -143,7 +141,6 @@ def submit_transaction(request):
         item.stock -= quantity
         item.save()
     else:
-        # TODO; redirect with error message
         pass
     return redirect(index)
 

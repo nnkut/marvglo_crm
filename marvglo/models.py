@@ -48,7 +48,7 @@ class Transaction(models.Model):
     submitted_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 
     # TODO: figure if this is needed at all
-    date = models.DateField(blank=True, null=True)
+    date = models.DateTimeField(blank=True, null=True)
 
     # commissions (not stored in db, just a list computed when transactions are gathered)
     personal_bonus = []
