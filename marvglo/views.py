@@ -128,18 +128,20 @@ def view_transaction(request, transaction_id):
 @require_POST
 def submit_transaction(request):
     # TODO: Dict no entry error here. (although doesnt really matter as its a post)
-    employee_id = Employee.objects.get(user=User.objects.get(username=request.POST['employee']))
-    quantity = request.POST['quantity']
+
+    employee_id = Employee.objects.get(user=User.objects.get(username=request.POST['employeeId']))
+    quantity = int(request.POST['quantity'])
     item = SaleItem.objects.get(name=request.POST['itemName'])
     # check there is enough product in stock
     if quantity <= item.stock:
         t = Transaction(item=item,
                         quantity=quantity,
-                        submitted_by=request.user.employee,
+                        submitted_by=request.user,
                         owner=employee_id,
                         sold_at_price=SaleItem.objects.get(name=request.POST['itemName']).price)
         t.save()
         item.stock -= quantity
+        item.save()
     else:
         # TODO; redirect with error message
         pass
