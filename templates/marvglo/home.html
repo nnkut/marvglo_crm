@@ -64,10 +64,10 @@
                     <input class="form-control" type="number" step="1" id="quantity" name="quantity" required placeholder="# items sold"/>
                 </div>
 
-                <div class="form-group">
-                    <label for="discount">Discounted</label>
-                    <input type="checkbox" id="discount" name="discount">
-                </div>
+{#                <div class="form-group">#}
+{#                    <label for="discount">Discounted</label>#}
+{#                    <input type="checkbox" id="discount" name="discount">#}
+{#                </div>#}
 
                 <button type="submit" class="btn btn-default">Add</button>
 
@@ -123,7 +123,7 @@
             <tr>
                 <td>{{ transaction.item.id }}</td>
                 <td>{{ transaction.item.name }}</td>
-                <td>{{ transaction.sold_at_price }} {% if transaction.discounted %} (discounted){% endif %}</td>
+                <td>{{ transaction.sold_at_price }}</td>
                 <td>{{ transaction.quantity }}</td>
                 <td>{{ transaction.owner }}</td>
                 <td>

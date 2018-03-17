@@ -64,12 +64,7 @@ def index(request):
         for level in range(MAX_EMPLOYEE_LEVEL):
             personal_bonus = PERSONAL_BONUS_COMMISSION[level] * transactions[transaction_id].quantity * transactions[
                         transaction_id].sold_at_price
-            ''' already accounted for in transaction creation'''
-            # # if its a discounted transaction - count that into the commission
-            # if transactions[transaction_id].discounted:
-            #     personal_bonus = personal_bonus * (1 - DISCOUNTS[level])
-            personal_bonuses.append(
-                round(personal_bonus, 2))
+            personal_bonuses.append(round(personal_bonus, 2))
             volume_bonuses.append(
                 round(
                     transactions[transaction_id].quantity * transactions[transaction_id].sold_at_price *
@@ -143,13 +138,8 @@ def submit_transaction(request):
     item = SaleItem.objects.get(name=request.POST['itemName'])
     sold_at_price = SaleItem.objects.get(name=request.POST['itemName']).price
     discount = False
-    try:
-        discount = request.POST['discount'] == 'on'
-        # fix the price if its a discounted transaction based on employee level
-        if discount:
-            sold_at_price = sold_at_price * (1 - DISCOUNTS[employee_id.level])
-    except MultiValueDictKeyError:
-        pass
+    # adjust price based on who sold it
+    sold_at_price = sold_at_price * (1 - DISCOUNTS[employee_id.level])
     # check there is enough product in stock
     if quantity <= item.stock:
         t = Transaction(item=item,

@@ -132,4 +132,6 @@ VOLUME_BONUS_COMMISSION = [[0, 0.05, 0.1, 0.13],
                            [0, 0, 0, 0.03],
                            [0, 0, 0, 0]]
 
+DISCOUNTS = [0.15, 0.1, 0.07, 0.05]
+
 RANK_TITLE_MAPPING = ['Director', 'Assistant Director', 'Supervisor', 'Assistant Supervisor', ]
