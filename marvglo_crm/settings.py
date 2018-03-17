@@ -132,4 +132,4 @@ VOLUME_BONUS_COMMISSION = [[0, 0.05, 0.1, 0.13],
                            [0, 0, 0, 0.03],
                            [0, 0, 0, 0]]
 
-RANK_TITLE_MAPPING = ['Director', 'Assistant Director', 'Assistant Supervisor', 'Supervisor']
+RANK_TITLE_MAPPING = ['Director', 'Assistant Director', 'Supervisor', 'Assistant Supervisor', ]
