@@ -123,7 +123,7 @@
             <tr>
                 <td>{{ transaction.item.id }}</td>
                 <td>{{ transaction.item.name }}</td>
-                <td>{{ transaction.sold_at_price }}</td>
+                <td>{{ transaction.sold_at_price }} {% if transaction.discounted %} (discounted){% endif %}</td>
                 <td>{{ transaction.quantity }}</td>
                 <td>{{ transaction.owner }}</td>
                 <td>

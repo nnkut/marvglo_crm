@@ -9,7 +9,8 @@ import Queue
 import datetime
 
 from marvglo.models import Employee, SaleItem, Transaction
-from marvglo_crm.settings import MAX_EMPLOYEE_LEVEL, PERSONAL_BONUS_COMMISSION, VOLUME_BONUS_COMMISSION, RANK_TITLE_MAPPING
+from marvglo_crm.settings import MAX_EMPLOYEE_LEVEL, PERSONAL_BONUS_COMMISSION, VOLUME_BONUS_COMMISSION, \
+    RANK_TITLE_MAPPING, DISCOUNTS
 
 
 @require_GET
@@ -61,10 +62,14 @@ def index(request):
     volume_bonuses = []
     for transaction_id in range(len(transactions)):
         for level in range(MAX_EMPLOYEE_LEVEL):
+            personal_bonus = PERSONAL_BONUS_COMMISSION[level] * transactions[transaction_id].quantity * transactions[
+                        transaction_id].sold_at_price
+            ''' already accounted for in transaction creation'''
+            # # if its a discounted transaction - count that into the commission
+            # if transactions[transaction_id].discounted:
+            #     personal_bonus = personal_bonus * (1 - DISCOUNTS[level])
             personal_bonuses.append(
-                round(
-                    PERSONAL_BONUS_COMMISSION[level] * transactions[transaction_id].quantity * transactions[
-                        transaction_id].sold_at_price, 2))
+                round(personal_bonus, 2))
             volume_bonuses.append(
                 round(
                     transactions[transaction_id].quantity * transactions[transaction_id].sold_at_price *
@@ -136,9 +141,13 @@ def submit_transaction(request):
     employee_id = Employee.objects.get(user=User.objects.get(username=request.POST['employeeId']))
     quantity = int(request.POST['quantity'])
     item = SaleItem.objects.get(name=request.POST['itemName'])
+    sold_at_price = SaleItem.objects.get(name=request.POST['itemName']).price
     discount = False
     try:
         discount = request.POST['discount'] == 'on'
+        # fix the price if its a discounted transaction based on employee level
+        if discount:
+            sold_at_price = sold_at_price * (1 - DISCOUNTS[employee_id.level])
     except MultiValueDictKeyError:
         pass
     # check there is enough product in stock
@@ -147,7 +156,7 @@ def submit_transaction(request):
                         quantity=quantity,
                         submitted_by=request.user,
                         owner=employee_id,
-                        sold_at_price=SaleItem.objects.get(name=request.POST['itemName']).price,
+                        sold_at_price=sold_at_price,
                         discounted=discount)
         t.save()
         item.stock -= quantity
