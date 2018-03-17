@@ -50,6 +50,8 @@ class Transaction(models.Model):
 
     date_time_created = models.DateTimeField(blank=True, null=True, default=timezone.now)
 
+    discounted = models.BooleanField(default=False)
+
     # commissions (not stored in db, just a list computed when transactions are gathered)
     personal_bonus = []
     volume_bonus = []

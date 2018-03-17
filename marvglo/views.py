@@ -136,13 +136,19 @@ def submit_transaction(request):
     employee_id = Employee.objects.get(user=User.objects.get(username=request.POST['employeeId']))
     quantity = int(request.POST['quantity'])
     item = SaleItem.objects.get(name=request.POST['itemName'])
+    discount = False
+    try:
+        discount = request.POST['discount'] == 'on'
+    except MultiValueDictKeyError:
+        pass
     # check there is enough product in stock
     if quantity <= item.stock:
         t = Transaction(item=item,
                         quantity=quantity,
                         submitted_by=request.user,
                         owner=employee_id,
-                        sold_at_price=SaleItem.objects.get(name=request.POST['itemName']).price)
+                        sold_at_price=SaleItem.objects.get(name=request.POST['itemName']).price,
+                        discounted=discount)
         t.save()
         item.stock -= quantity
         item.save()
