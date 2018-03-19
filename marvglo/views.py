@@ -178,7 +178,7 @@ def amend_transaction(request, transaction_id):
 @login_required(login_url='reg/login/')
 def manage(request):
     if request.method == 'GET':
-        if request.user.employee is None or request.user.employee.level > 2:
+        if not request.user.employee.is_cashier:
             return redirect(index)
         employees = Employee.objects.filter(admin_approved=False)
         ctx = {
