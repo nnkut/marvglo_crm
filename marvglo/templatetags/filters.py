@@ -9,3 +9,9 @@ def at(l, idx):
         return l[idx]
     except IndexError:
         return None
+
+
+@register.filter(name='getdate')
+def getdate(date):
+    print date
+    return '123'

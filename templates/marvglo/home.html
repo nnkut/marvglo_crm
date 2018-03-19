@@ -98,6 +98,9 @@
                     Item ID
                 </th>
                 <th class="header">
+                    Date submitted
+                </th>
+                <th class="header">
                     Item Name
                 </th>
                 <th class="header">
@@ -122,6 +125,7 @@
         {% for transaction in transactions %}
             <tr>
                 <td>{{ transaction.item.id }}</td>
+                <td>{{ transaction.date_time_created }}</td>
                 <td>{{ transaction.item.name }}</td>
                 <td>{{ transaction.sold_at_price }}</td>
                 <td>{{ transaction.quantity }}</td>

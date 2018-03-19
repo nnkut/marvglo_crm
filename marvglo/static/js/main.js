@@ -16,9 +16,9 @@ function updateTotalsFromTable() {
     $('#transactions-form-data tr').each(function (idx, row) {
         if ($(row).is(':visible')) {
             var cells = $(row).children();
-            num_sales.push($(cells[3]).html());
-            sale_prices.push($(cells[2]).html());
-            commissions.push($(cells[5]).html());
+            num_sales.push($(cells[4]).html());
+            sale_prices.push($(cells[3]).html());
+            commissions.push($(cells[6]).html());
         }
     });
 
